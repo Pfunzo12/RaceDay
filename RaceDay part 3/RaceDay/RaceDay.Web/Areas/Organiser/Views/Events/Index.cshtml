@@ -1,0 +1,48 @@
+@model List<EventResponse>
+@{ ViewData["Title"] = "Events"; }
+<div class="page-head">
+    <div>
+        <h1>My events</h1>
+        <p class="page-sub">Create, edit and remove your events.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">+ New event</a>
+</div>
+
+<div class="rd-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><h3>No events yet</h3><p>Click "New event" to add your first one.</p></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table table-hover rd-table">
+                <thead><tr><th></th><th>Event</th><th>Type</th><th>Date</th><th>Location</th><th>Distance</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td style="width:80px">
+                            @if (!string.IsNullOrEmpty(e.BannerImagePath))
+                            {
+                                <img class="thumb" alt="" src="@Url.Action("Image", "Media", new { area = "", path = e.BannerImagePath })" />
+                            }
+                            else { <span class="thumb"></span> }
+                        </td>
+                        <td class="fw-semibold">@e.Name</td>
+                        <td><span class="type-tag">@e.EventType</span></td>
+                        <td>@e.EventDate.ToString("d MMM yyyy")</td>
+                        <td>@e.Location</td>
+                        <td>@e.DistanceKm.ToString("0.##") km</td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@e.Id">Edit</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Categories" asp-action="Index" asp-route-eventId="@e.Id">Categories</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-action="Delete" asp-route-id="@e.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

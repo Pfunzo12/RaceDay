@@ -1,0 +1,66 @@
+@model List<ResultEntryRow>
+@{
+    var ev = (EventResponse)ViewBag.Event;
+    var concluded = (bool)ViewBag.Concluded;
+    var unpublished = Model.Count(r => r.ResultId.HasValue && !r.IsPublished);
+    ViewData["Title"] = "Results";
+}
+<div class="page-head">
+    <div>
+        <h1>Results</h1>
+        <p class="page-sub">@ev.Name · @ev.EventDate.ToString("d MMM yyyy") · @ev.Location</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-navy" asp-action="Index" asp-route-eventId="">Choose another event</a>
+        <form asp-action="Publish" asp-route-eventId="@ev.Id" method="post">
+            <button type="submit" class="btn btn-primary" disabled="@(!concluded || unpublished == 0)">Publish results (@unpublished)</button>
+        </form>
+    </div>
+</div>
+
+@if (!concluded)
+{
+    <div class="alert alert-warning">This event hasn't finished yet. Results can be captured once it has concluded.</div>
+}
+
+<div class="rd-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><h3>No confirmed participants</h3><p>Only confirmed enrolments can have results. Confirm entries on the Enrolments page first.</p></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table rd-table">
+                <thead><tr><th>Participant</th><th>Category</th><th style="width:170px">Finish time</th><th style="width:120px">Position</th><th>State</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var r in Model)
+                {
+                    var formId = "f-" + r.EnrollmentId;
+                    <tr>
+                        <td class="fw-semibold">
+                            @r.ParticipantName
+                            <form id="@formId" asp-action="Save" method="post">
+                                <input type="hidden" name="EventId" value="@ev.Id" />
+                                <input type="hidden" name="EnrollmentId" value="@r.EnrollmentId" />
+                                <input type="hidden" name="ResultId" value="@r.ResultId" />
+                            </form>
+                        </td>
+                        <td>@r.CategoryName</td>
+                        <td><input name="FinishTime" form="@formId" class="form-control form-control-sm" placeholder="hh:mm:ss" pattern="\d{1,2}:\d{2}:\d{2}"
+                                   value="@(r.FinishTime.HasValue ? UiHelpers.FormatTime(r.FinishTime.Value) : "")" disabled="@(!concluded)" required /></td>
+                        <td><input name="Position" form="@formId" type="number" min="1" class="form-control form-control-sm"
+                                   value="@r.Position" disabled="@(!concluded)" required /></td>
+                        <td>
+                            @if (!r.ResultId.HasValue) { <span class="status-badge status-neutral">No result</span> }
+                            else if (r.IsPublished) { <span class="status-badge status-confirmed">Published</span> }
+                            else { <span class="status-badge status-pending">Draft</span> }
+                        </td>
+                        <td class="text-end"><button type="submit" form="@formId" class="btn btn-outline-primary btn-sm" disabled="@(!concluded)">@(r.ResultId.HasValue ? "Update" : "Save")</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

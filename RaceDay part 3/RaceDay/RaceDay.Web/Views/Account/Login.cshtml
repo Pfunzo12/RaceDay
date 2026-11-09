@@ -1,0 +1,24 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Log in"; }
+<div class="auth-wrap">
+    <div class="rd-card auth-card">
+        <h2 class="mb-1">Welcome back</h2>
+        <p class="page-sub mb-4">Log in to enter events or manage your races.</p>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <form asp-action="Login" method="post" novalidate>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" required />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Log in</button>
+        </form>
+        <p class="text-center mt-3 mb-0">New here? <a asp-action="Register">Create an account</a></p>
+    </div>
+</div>

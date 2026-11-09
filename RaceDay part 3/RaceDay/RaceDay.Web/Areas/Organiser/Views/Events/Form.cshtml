@@ -1,0 +1,65 @@
+@model EventFormViewModel
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Edit event" : "Create event";
+}
+<div class="page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="page-sub">All fields marked * are required.</p>
+    </div>
+    <a class="btn btn-navy" asp-action="Index">Back to events</a>
+</div>
+
+<div class="rd-card card-pad">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <form method="post" enctype="multipart/form-data" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Id : (int?)null)" novalidate>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label asp-for="Name" class="form-label">Event name *</label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="EventType" class="form-label">Event type *</label>
+                <select asp-for="EventType" asp-items="@(new SelectList((List<string>)ViewBag.Types))" class="form-select" required>
+                    <option value="">Choose a type…</option>
+                </select>
+                <span asp-validation-for="EventType" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Description" class="form-label">Description *</label>
+                <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="EventDate" class="form-label">Event date *</label>
+                <input asp-for="EventDate" class="form-control" required />
+                <span asp-validation-for="EventDate" class="text-danger small"></span>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Location" class="form-label">Location *</label>
+                <input asp-for="Location" class="form-control" required />
+                <span asp-validation-for="Location" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="DistanceKm" class="form-label">Distance (km) *</label>
+                <input asp-for="DistanceKm" class="form-control" type="number" step="0.01" min="0.1" required />
+                <span asp-validation-for="DistanceKm" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="BannerFile" class="form-label">Event banner image</label>
+                @if (!string.IsNullOrEmpty(Model.BannerImagePath))
+                {
+                    <div class="mb-2"><img alt="Current banner" class="rounded" style="max-height:140px" src="@Url.Action("Image", "Media", new { area = "", path = Model.BannerImagePath })" /></div>
+                }
+                <input asp-for="BannerFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/*" />
+                <div class="form-text">JPG, PNG or WEBP, up to 2 MB. @(isEdit ? "Leave empty to keep the current banner." : "")</div>
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">@(isEdit ? "Save changes" : "Create event")</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>

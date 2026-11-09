@@ -1,0 +1,36 @@
+@model List<ResultResponse>
+@{ ViewData["Title"] = "My results"; }
+<div class="page-head">
+    <div>
+        <h1>My results</h1>
+        <p class="page-sub">Your race history across completed events.</p>
+    </div>
+</div>
+
+<div class="rd-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><h3>No results yet</h3>
+            <p>Results appear here once an organiser publishes them for an event you entered.</p></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table table-hover rd-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr></thead>
+                <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@r.EventName</td>
+                        <td>@r.EventDate.ToString("d MMM yyyy")</td>
+                        <td>@r.CategoryName</td>
+                        <td class="finish-time">@UiHelpers.FormatTime(r.FinishTime)</td>
+                        <td><span class="finish-pos">@UiHelpers.Ordinal(r.Position)</span> <span class="finish-of">of @r.TotalFinishers finishers</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,81 @@
+@model List<EventResponse>
+@{
+    var f = (EventFilterViewModel)ViewBag.Filter;
+    ViewData["Title"] = "Find events";
+}
+<div class="page-head">
+    <div>
+        <h1>Upcoming events</h1>
+        <p class="page-sub">Find your next start line.</p>
+    </div>
+</div>
+
+<form method="get" class="rd-card card-pad mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label" for="Search">Search</label>
+            <input class="form-control" id="Search" name="Search" value="@f.Search" placeholder="Name or keyword" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="Type">Type</label>
+            <select class="form-select" id="Type" name="Type">
+                <option value="">All types</option>
+                @foreach (var t in (List<string>)ViewBag.Types)
+                {
+                    <option value="@t" selected="@(f.Type == t)">@t</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="Location">Location</label>
+            <input class="form-control" id="Location" name="Location" value="@f.Location" placeholder="City" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="From">From</label>
+            <input class="form-control" type="date" id="From" name="From" value="@(f.From?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="To">To</label>
+            <input class="form-control" type="date" id="To" name="To" value="@(f.To?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-12 d-flex flex-wrap align-items-center gap-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="IncludePast" name="IncludePast" value="true" checked="@f.IncludePast" />
+                <label class="form-check-label" for="IncludePast">Include past events</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply filters</button>
+            <a class="btn btn-outline-secondary" asp-action="Index" asp-route-search="" asp-route-type="">Clear</a>
+        </div>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="rd-card empty-state"><h3>No events match</h3><p>Try widening your filters or check back soon.</p></div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var e in Model)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="rd-card event-card">
+                    <div class="event-banner">
+                        @if (!string.IsNullOrEmpty(e.BannerImagePath))
+                        {
+                            <img alt="@e.Name banner" src="@Url.Action("Image", "Media", new { area = "", path = e.BannerImagePath })" />
+                        }
+                        <span class="type-tag">@e.EventType</span>
+                    </div>
+                    <div class="card-pad d-flex flex-column flex-grow-1">
+                        <h3 class="mb-1">@e.Name</h3>
+                        <p class="event-meta mb-1">@e.EventDate.ToString("ddd, d MMM yyyy")</p>
+                        <p class="event-meta mb-3">@e.Location · @e.DistanceKm.ToString("0.##") km</p>
+                        <p class="text-secondary small flex-grow-1">@(e.Description.Length > 110 ? e.Description[..110] + "…" : e.Description)</p>
+                        <a class="btn btn-primary mt-2" asp-action="Details" asp-route-id="@e.Id">View &amp; enrol</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

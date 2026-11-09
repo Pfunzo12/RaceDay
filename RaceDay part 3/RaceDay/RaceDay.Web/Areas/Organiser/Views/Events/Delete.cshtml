@@ -1,0 +1,12 @@
+@model EventResponse
+@{ ViewData["Title"] = "Delete event"; }
+<div class="rd-card card-pad mx-auto" style="max-width:600px">
+    <h2>Delete this event?</h2>
+    <p class="mb-1"><strong>@Model.Name</strong></p>
+    <p class="event-meta">@Model.EventDate.ToString("ddd, d MMM yyyy") · @Model.Location</p>
+    <div class="alert alert-warning">This also removes the event's categories, enrolments and results. This can't be undone.</div>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Yes, delete event</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Keep it</a>
+    </form>
+</div>

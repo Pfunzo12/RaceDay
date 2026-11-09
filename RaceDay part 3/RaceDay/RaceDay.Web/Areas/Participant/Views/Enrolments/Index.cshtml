@@ -1,0 +1,38 @@
+@model List<EnrolmentResponse>
+@{ ViewData["Title"] = "My enrolments"; }
+<div class="page-head">
+    <div>
+        <h1>My enrolments</h1>
+        <p class="page-sub">Every event you've entered and where each entry stands.</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Events" asp-action="Index">Find more events</a>
+</div>
+
+<div class="rd-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><h3>You haven't entered anything yet</h3><p>Pick an event and choose a category to get started.</p>
+            <a class="btn btn-primary" asp-controller="Events" asp-action="Index">Browse events</a></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table table-hover rd-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Location</th><th>Category</th><th>Enrolled</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold"><a asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.EventName</a></td>
+                        <td>@e.EventDate.ToString("ddd, d MMM yyyy")</td>
+                        <td>@e.Location</td>
+                        <td>@e.CategoryName</td>
+                        <td>@e.EnrolledOn.ToLocalTime().ToString("d MMM yyyy")</td>
+                        <td><partial name="_StatusBadge" model="e.Status" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

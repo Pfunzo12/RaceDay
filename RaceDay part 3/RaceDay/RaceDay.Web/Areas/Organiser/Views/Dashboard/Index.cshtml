@@ -1,0 +1,53 @@
+@model OrganiserDashboardResponse
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="page-head">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="page-sub">Your events, entries and upcoming dates at a glance.</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Events" asp-action="Create">+ New event</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="rd-card stat-card"><div class="stat-value">@Model.TotalEvents</div><div class="stat-label">Events created</div></div></div>
+    <div class="col-md-4"><div class="rd-card stat-card lime"><div class="stat-value">@Model.TotalEnrolments</div><div class="stat-label">Total enrolments</div></div></div>
+    <div class="col-md-4"><div class="rd-card stat-card navy"><div class="stat-value">@Model.UpcomingEvents</div><div class="stat-label">Upcoming events</div></div></div>
+</div>
+
+<div class="rd-card">
+    @if (!Model.Events.Any())
+    {
+        <div class="empty-state">
+            <h3>No events yet</h3>
+            <p>Create your first event and start collecting entries.</p>
+            <a class="btn btn-primary" asp-controller="Events" asp-action="Create">Create an event</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table table-hover rd-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Location</th><th class="text-center">Enrolments</th><th class="text-center">Confirmed</th><th>When</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var e in Model.Events)
+                {
+                    <tr>
+                        <td class="fw-semibold">@e.Name</td>
+                        <td>@e.EventDate.ToString("ddd, d MMM yyyy")</td>
+                        <td>@e.Location</td>
+                        <td class="text-center fw-bold">@e.EnrolmentCount</td>
+                        <td class="text-center">@e.ConfirmedCount</td>
+                        <td>
+                            @if (e.IsUpcoming) { <span class="status-badge status-confirmed">Upcoming</span> }
+                            else { <span class="status-badge status-neutral">Completed</span> }
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Enrolments" asp-action="Index" asp-route-eventId="@e.Id">Enrolments</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

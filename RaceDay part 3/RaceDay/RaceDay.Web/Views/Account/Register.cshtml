@@ -1,0 +1,49 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Register"; }
+<div class="auth-wrap">
+    <div class="rd-card auth-card">
+        <h2 class="mb-1">Join RaceDay</h2>
+        <p class="page-sub mb-4">Create your account in under a minute.</p>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <form asp-action="Register" method="post" novalidate>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" autocomplete="name" required />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" required />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <div class="col-sm-6">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" required />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">@Html.DisplayNameFor(m => m.Role)</label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="role-option"><input type="radio" asp-for="Role" value="participant" />
+                            <strong>Participant</strong><br /><small class="text-secondary">Enter events and track results</small></label>
+                    </div>
+                    <div class="col-6">
+                        <label class="role-option"><input type="radio" asp-for="Role" value="organiser" />
+                            <strong>Organiser</strong><br /><small class="text-secondary">Create and run events</small></label>
+                    </div>
+                </div>
+                <span asp-validation-for="Role" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Create account</button>
+        </form>
+        <p class="text-center mt-3 mb-0">Already registered? <a asp-action="Login">Log in</a></p>
+    </div>
+</div>

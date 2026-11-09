@@ -1,0 +1,64 @@
+@model EventResponse
+@{
+    var cats = (List<CategoryResponse>)ViewBag.Categories;
+    var past = Model.EventDate.Date < DateTime.Today;
+    ViewData["Title"] = Model.Name;
+}
+<a class="btn btn-sm btn-outline-secondary mb-3" asp-action="Index">&larr; All events</a>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="rd-card">
+            <div class="event-banner large">
+                @if (!string.IsNullOrEmpty(Model.BannerImagePath))
+                {
+                    <img alt="@Model.Name banner" src="@Url.Action("Image", "Media", new { area = "", path = Model.BannerImagePath })" />
+                }
+                <span class="type-tag">@Model.EventType</span>
+            </div>
+            <div class="card-pad">
+                <h1 class="mb-2">@Model.Name</h1>
+                <div class="row g-2 mb-3">
+                    <div class="col-sm-4"><div class="stat-label">When</div><div class="fw-semibold">@Model.EventDate.ToString("ddd, d MMM yyyy")</div></div>
+                    <div class="col-sm-4"><div class="stat-label">Where</div><div class="fw-semibold">@Model.Location</div></div>
+                    <div class="col-sm-4"><div class="stat-label">Distance</div><div class="fw-semibold">@Model.DistanceKm.ToString("0.##") km</div></div>
+                </div>
+                <p style="white-space:pre-line">@Model.Description</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="rd-card card-pad">
+            <h3>Choose a category</h3>
+            @if (past)
+            {
+                <div class="alert alert-secondary mb-0">This event has already taken place, so enrolment is closed.</div>
+            }
+            else if (!cats.Any())
+            {
+                <p class="text-secondary mb-0">The organiser hasn't added categories yet. Check back soon.</p>
+            }
+            else
+            {
+                <form asp-action="Enrol" asp-route-id="@Model.Id" method="post">
+                    <div class="d-grid gap-2 mb-3">
+                        @foreach (var c in cats)
+                        {
+                            var full = c.Taken >= c.MaxParticipants;
+                            <label class="role-option" style="@(full ? "opacity:.55" : "")">
+                                <input type="radio" name="categoryId" value="@c.Id" required disabled="@full" />
+                                <strong>@c.Name</strong>
+                                <span class="float-end fw-bold">@UiHelpers.Money(c.Price)</span>
+                                <br /><small class="text-secondary">@UiHelpers.CategoryDescription(c.DistanceKm, c.MinAge, c.MaxAge)
+                                    · @(full ? "Full" : $"{c.MaxParticipants - c.Taken} spots left")</small>
+                            </label>
+                        }
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">Enrol now</button>
+                    <p class="form-text mt-2 mb-0">Your place starts as <span class="status-badge status-pending">Pending</span> until the organiser confirms it.</p>
+                </form>
+            }
+        </div>
+    </div>
+</div>

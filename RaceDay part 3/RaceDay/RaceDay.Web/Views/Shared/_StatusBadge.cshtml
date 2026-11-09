@@ -1,0 +1,12 @@
+@model string
+@{
+    var key = (Model ?? "").Trim().ToLowerInvariant();
+    var cls = key switch
+    {
+        "confirmed" => "status-confirmed",
+        "pending" => "status-pending",
+        "cancelled" => "status-cancelled",
+        _ => "status-neutral"
+    };
+}
+<span class="status-badge @cls">@UiHelpers.Capitalise(key)</span>
